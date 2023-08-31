@@ -36,7 +36,7 @@ const createWeatherCard = (cityName, weatherItem, index) => {
 
 const getWeatherDetails = (cityName, lat, lon) => {
   // api for weather details
-  const WEATHER_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+  const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
 
   fetch(WEATHER_API_URL)
     .then((res) => res.json())
@@ -78,7 +78,7 @@ const getCityCoordinates = () => {
     alert("Enter the city name");
   }
 
-  const GEOCODING_API_URL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`; //api for coordinates
+  const GEOCODING_API_URL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`; //api for coordinates
 
   fetch(GEOCODING_API_URL)
     .then((res) => res.json())
@@ -92,31 +92,35 @@ const getCityCoordinates = () => {
     });
 };
 
-
 const getUserCoordinates = () => {
   navigator.geolocation.getCurrentPosition(
-    position => {
-      const {latitude , longitude} = position.coords;
-      const REVERSE_GEOCODING_URL = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      const REVERSE_GEOCODING_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
 
       // city coordinates using reverse geocoding api
       fetch(REVERSE_GEOCODING_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.length) return alert(`No coordinates found for ${cityName}`);
-        const { name } = data[0];
-        getWeatherDetails(name, latitude, longitude);
-      }).catch(() => {
-        alert("Error in feteching the city");
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.length)
+            return alert(`No coordinates found for ${cityName}`);
+          const { name } = data[0];
+          getWeatherDetails(name, latitude, longitude);
+        })
+        .catch(() => {
+          alert("Error in feteching the city");
+        });
     },
-    error => {
-      if(error.code === error.PERMISSION_DENIED){
+    (error) => {
+      if (error.code === error.PERMISSION_DENIED) {
         alert("permission denied");
       }
     }
-  )
-}
+  );
+};
 serachBtn.addEventListener("click", getCityCoordinates);
-locationBtn.addEventListener("click" , getUserCoordinates);
-cityInput.addEventListener("keyup" , e => e.key === "Enter" && getUserCoordinates); //use enter key to find the city
+locationBtn.addEventListener("click", getUserCoordinates);
+cityInput.addEventListener(
+  "keyup",
+  (e) => e.key === "Enter" && getUserCoordinates
+); //use enter key to find the city
